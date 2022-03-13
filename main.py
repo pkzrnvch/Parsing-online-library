@@ -1,5 +1,5 @@
 import requests
-from pathlib import Path
+from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 import os
@@ -29,7 +29,7 @@ def download_txt(url, filename, folder='books/'):
     return filepath
 
 
-def parse_book_title_and_author(id):
+def parse_book_page(id):
     url = f'http://tululu.org/b{id}/'
     response = requests.get(url)
     response.raise_for_status()
@@ -40,14 +40,21 @@ def parse_book_title_and_author(id):
     title, author = h1_text.split('::')
     title = title.strip()
     author = author.strip()
-    return title, author
+    cover_link = urljoin(url, soup.find(class_='bookimage').find('img')['src'])
+    parsed_book_page = {
+        'title': title,
+        'author': author,
+        'cover_link': cover_link,
+    }
+    return parsed_book_page
 
 
 def download_tululu_book(id):
     url = f'http://tululu.org/txt.php?id={id}'
     try:
-        title, author = parse_book_title_and_author(id)
-        print(download_txt(url, title))
+        parsed_book_page = parse_book_page(id)
+        print(parsed_book_page)
+        #print(download_txt(url, title))
     except requests.HTTPError:
         print('Книга не найдена')
 
