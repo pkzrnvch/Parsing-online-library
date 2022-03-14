@@ -52,10 +52,15 @@ def parse_book_page(id):
     title = title.strip()
     author = author.strip()
     cover_link = urljoin(url, soup.find(class_='bookimage').find('img')['src'])
+    comment_tags = soup.find_all('div', class_='texts')
+    comments = []
+    for comment_tag in comment_tags:
+        comments.append(comment_tag.find('span').text)
     parsed_book_page = {
         'title': title,
         'author': author,
         'cover_link': cover_link,
+        'comments': comments,
     }
     return parsed_book_page
 
