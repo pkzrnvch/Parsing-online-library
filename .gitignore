@@ -118,4 +118,6 @@ dmypy.json
 
 # Project
 /books
+/images
 bs4_tutorial.py
+.DS_Store

@@ -1,5 +1,5 @@
 import requests
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit, unquote
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 import os
@@ -29,6 +29,17 @@ def download_txt(url, filename, folder='books/'):
     return filepath
 
 
+def download_image(url, folder='images/'):
+    response = requests.get(url)
+    response.raise_for_status()
+    filename = unquote(urlsplit(url).path).split('/')[-1]
+    filepath = os.path.join(folder, filename)
+    os.makedirs(folder, exist_ok=True)
+    with open(filepath, 'wb') as file:
+        file.write(response.content)
+    return filepath
+
+
 def parse_book_page(id):
     url = f'http://tululu.org/b{id}/'
     response = requests.get(url)
@@ -54,7 +65,8 @@ def download_tululu_book(id):
     try:
         parsed_book_page = parse_book_page(id)
         print(parsed_book_page)
-        #print(download_txt(url, title))
+        print(download_txt(url, parsed_book_page['author']))
+        download_image(parsed_book_page['cover_link'])
     except requests.HTTPError:
         print('Книга не найдена')
 
