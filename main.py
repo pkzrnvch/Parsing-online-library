@@ -3,6 +3,8 @@ from urllib.parse import urljoin, urlsplit, unquote
 from bs4 import BeautifulSoup
 from pathvalidate import sanitize_filename
 import os
+import argparse
+
 
 def check_for_redirect(response):
     if response.history:
@@ -37,11 +39,12 @@ def download_image(url, folder='images/'):
     os.makedirs(folder, exist_ok=True)
     with open(filepath, 'wb') as file:
         file.write(response.content)
+    print(response.history)
     return filepath
 
 
 def parse_book_page(id):
-    url = f'http://tululu.org/b{id}/'
+    url = f'https://tululu.org/b{id}/'
     response = requests.get(url)
     response.raise_for_status()
     check_for_redirect(response)
@@ -71,7 +74,7 @@ def parse_book_page(id):
 
 
 def download_tululu_book(id):
-    url = f'http://tululu.org/txt.php?id={id}'
+    url = f'https://tululu.org/txt.php?id={id}'
     try:
         parsed_book_page = parse_book_page(id)
         book_path = download_txt(url, f'{id}.' + parsed_book_page['title'])
@@ -84,6 +87,15 @@ def download_tululu_book(id):
         print('Книга не найдена', '\n')
 
 
+def main():
+    parser = argparse.ArgumentParser(
+        description="This script downloads books, book covers and parses book descriptions."
+    )
+    parser.add_argument("--start_id", type=int, help="id of the book to start downloading", default=1)
+    parser.add_argument("--end_id", type=int, help="id of the book to finish downloading", default=10)
+    for id in range(parser.parse_args().start_id, parser.parse_args().end_id):
+        download_tululu_book(id)
 
-for i in range(10):
-    download_tululu_book(i+1)
+
+if __name__ == '__main__':
+    main()
