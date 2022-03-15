@@ -39,7 +39,6 @@ def download_image(url, folder='images/'):
     os.makedirs(folder, exist_ok=True)
     with open(filepath, 'wb') as file:
         file.write(response.content)
-    print(response.history)
     return filepath
 
 
@@ -91,9 +90,9 @@ def main():
     parser = argparse.ArgumentParser(
         description="This script downloads books, book covers and parses book descriptions."
     )
-    parser.add_argument("--start_id", type=int, help="id of the book to start downloading", default=1)
-    parser.add_argument("--end_id", type=int, help="id of the book to finish downloading", default=10)
-    for id in range(parser.parse_args().start_id, parser.parse_args().end_id):
+    parser.add_argument("--start_id", type=int, help="id of the first book to download", default=1)
+    parser.add_argument("--end_id", type=int, help="id of the last book to download", default=10)
+    for id in range(parser.parse_args().start_id, parser.parse_args().end_id+1):
         download_tululu_book(id)
 
 
