@@ -52,15 +52,20 @@ def parse_book_page(id):
     title = title.strip()
     author = author.strip()
     cover_link = urljoin(url, soup.find(class_='bookimage').find('img')['src'])
+    genre_tags = soup.find('span', class_='d_book').find_all('a')
+    genres = []
+    for tag in genre_tags:
+        genres.append(tag.text)
     comment_tags = soup.find_all('div', class_='texts')
     comments = []
-    for comment_tag in comment_tags:
-        comments.append(comment_tag.find('span').text)
+    for tag in comment_tags:
+        comments.append(tag.find('span').text)
     parsed_book_page = {
         'title': title,
         'author': author,
         'cover_link': cover_link,
         'comments': comments,
+        'genres': genres
     }
     return parsed_book_page
 
@@ -69,11 +74,15 @@ def download_tululu_book(id):
     url = f'http://tululu.org/txt.php?id={id}'
     try:
         parsed_book_page = parse_book_page(id)
-        print(parsed_book_page)
-        print(download_txt(url, parsed_book_page['author']))
+        book_path = download_txt(url, f'{id}.' + parsed_book_page['title'])
+        print('Заголовок:', parsed_book_page['title'])
+        print('Автор:', parsed_book_page['author'])
+        print('Жанры:', parsed_book_page['genres'])
+        print('Путь:', book_path, '\n')
         download_image(parsed_book_page['cover_link'])
     except requests.HTTPError:
-        print('Книга не найдена')
+        print('Книга не найдена', '\n')
+
 
 
 for i in range(10):
