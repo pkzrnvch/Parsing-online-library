@@ -15,6 +15,21 @@ To run the program use the command below from the project directory. Use `--star
 ```
 python main.py --start_id --end_id
 ```
+To parse fiction books category and download parsed books:
+```
+python parse_tululu_category.py --start_page --end_page --dest_folder --skip_imgs --skip_txt --json_path
+```
+- `--start_page` - first category page to get books from, `1` by default.
+
+- `--end_page` - last category page to get books from, `4` by default.
+
+- `--dest_folder` - destination folder to save json file with information on downloaded books, book texts and images.
+
+- `--skip_imgs` - don't save book covers, `False` by default.
+
+- `--skip_txt` - don't save book texts, `False` by default.
+
+- `--json_path` - custom path to save json file with information on downloaded books.
 
 ### Project Goals
 
